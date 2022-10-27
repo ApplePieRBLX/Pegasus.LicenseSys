@@ -16,8 +16,8 @@ databases_name = 'Put your database name here' # -- Example https://ibb.co/1fpQk
 collection_name = "Put your database collection name here" # -- Example https://ibb.co/Fwwvbxw
 
 #key information
-role_name = "Buyer"
-key_prefix = "Discord" # -- Example: Discord-byXjAI
+role_name = "Customer"
+key_prefix = "Peg" # -- Example: Discord-byXjAI
 
 @bot.command()
 @commands.has_permissions(manage_roles=True)  
@@ -39,10 +39,10 @@ async def gen(ctx, amount, time):
    expires = future.strftime("%y-%m-%d")
 
    # -- Key
-   key_yes = f"{key_prefix}-fkEPsG"
+   key_yes = f"{key_prefix}-cIrbacRELqJSLEObRVkqEGVZi"
    if key_int == 1:
       letters = string.ascii_letters
-      key = f"{key_prefix}-" + ''.join(random.choice(letters) for i in range(6))
+      key = f"{key_prefix}-" + ''.join(random.choice(letters) for i in range(25))
    elif key_int < 1:
       em = discord.Embed(color=0xff0000)
       em.add_field(name="Invalid number", value="Key amount needs to be higher than 0")
