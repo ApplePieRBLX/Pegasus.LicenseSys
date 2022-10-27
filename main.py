@@ -17,7 +17,7 @@ collection_name = "Put your database collection name here" # -- Example https://
 
 #key information
 role_name = "Customer"
-key_prefix = "Peg" # -- Example: Discord-byXjAI
+key_prefix = "Peg" # -- Example: Discord-qpPYfnDZhiahUFWzSPkQsLXxt
 
 @bot.command()
 @commands.has_permissions(manage_roles=True)  
@@ -76,23 +76,24 @@ async def gen(ctx, amount, time):
 
       #sends key info to database
       
-      post = {"key": key, "expiration": expires, "user": "Empty", "used": 'unused'}
+      post = {"_license": "Pegasus Predictor™", "key": key, "expiration": expires, "user": "Empty", "used": 'unused'}
       collection.insert_one(post)
-
-      #make our embed that sends when key is genned
+      
       em = discord.Embed(color=0x00ff00)
-      em.add_field(name="\n" + "discord", value="**Key generated!**" + "\n" +
-         "key: " + key + "\n" + "Expires: " + str(time) + " days" +  "\n" + "\n"
-         + "**Redeem Key**" + "\n" + f"Redeem the key by typing ```.redeem {key}```")
+      em = discord.Embed(title="Pegasus Predictor | Key Generation Was Successfull", color=0xff0000)
+      em.add_field(name="Key", value=f"```{key}```", inline=True)
+      em.add_field(name="Expiration", value=f"```{str(time)}```", inline=True)
+      em.set_footer(text=f"Redeem Using /redeem {key}")
       await message.delete()
       await ctx.send(embed=em)
    except:
       em = discord.Embed(color=0xff0000)
-      em.add_field(name="Api did not respond", value="Could not generate key")
+      em = discord.Embed(title="Pegasus Predictor | Key Generation Was Unsuccessfull", color=0xff0000)
+      em.add_field(name="Details", value=f"```DATABASE.ERROR```", inline=True)
       await ctx.send(content="", embed=em)
 
 #redeem function
-@bot.command()
+@bot.slash_command()
 async def redeem(ctx, key):
    mongo_url = mongo_db_link
    cluster = MongoClient(mongo_url)
@@ -106,24 +107,26 @@ async def redeem(ctx, key):
             expiration = str(results['expiration'])
             used = str(results['used'])
             if used == 'used':
-               em = discord.Embed(color=0xff0000)
-               em.add_field(name="Key already used", value="the key you entered has already been used")
-               await ctx.send(embed=em)
+               em = discord.Embed(title="Pegasus Predictor | Key Redemption Was Unsuccessfull", color=0xff0000)
+               em.add_field(name="License", value="f```{key}```", inline=True)
+               em.add_field(name="Details", value=f"```LICENSE.USED```", inline=True)
+               await ctx.respond(embed=em)
             elif used == 'unused':
                role = role_name
                user = ctx.message.author
                await user.add_roles(discord.utils.get(user.guild.roles, name=role))
-               em = discord.Embed(title="discord", color=0x00ff00)
-               em.add_field(name="Redeemed!", value="You have successfully redeemed the key"
-               + "\n" + "\n" + f"Key will expire on {expiration}")
-               await ctx.send(embed=em)
+               em = discord.Embed(title="Pegasus Predictor | Key Redemption Was Successfull", color=0x00ff00)
+               em.add_field(name="License", value=f"```{key}```", inline=True)
+               em.add_field(name="Expiration", value=f"```{expiration}```", inline=True)
+               await ctx.respond(embed=em)
                collection.update_one({"key": key}, {"$set":{"used": 'used'}})
                return
                
          else:
-            em = discord.Embed(title="discord", color=0xff0000)
-            em.add_field(name="Invalid key", value="The key you entered was invalid.")
-            await ctx.send(embed=em)
+            em = discord.Embed(title="Pegasus Predictor | Key Redemption Was Unsuccessfull", color=0xff0000)
+            em.add_field(name="License", value="f```{key}```", inline=True)
+            em.add_field(name="Details", value=f"```LICENSE.INVALID```", inline=True)
+            await ctx.respond(embed=em)
    except:
       pass
 
